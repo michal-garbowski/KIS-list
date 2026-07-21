@@ -1,0 +1,7 @@
+framework:
+    serializer:
+        default_context:
+            # Ensures every serialized \DateTimeInterface is presented in UTC
+            # (with an explicit +00:00 offset), regardless of the PHP process's
+            # or the database session's default timezone.
+            datetime_timezone: 'UTC'
