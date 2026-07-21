@@ -36,7 +36,7 @@ final class BookConstraintsTest extends KernelTestCase
     {
         $this->assertInsertIsRejected(
             "INSERT INTO book (serial_number, title, author, borrowed_at, borrower_card_number)
-             VALUES ('123456', 'Title', 'Author', NOW(), 'bad-card')",
+             VALUES ('123456', 'Title', 'Author', NOW(), 'abc123')",
         );
     }
 
