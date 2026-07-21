@@ -35,6 +35,16 @@ final class Book
     #[Groups(['book:read'])]
     private ?string $borrowerCardNumber = null;
 
+    /**
+     * Optimistic locking guard against concurrent writes (e.g. two parallel
+     * `borrow` requests both passing the pre-flush domain check). Doctrine
+     * maintains this automatically on every UPDATE; it is never exposed via
+     * the API (no #[Groups] attribute).
+     */
+    #[ORM\Version]
+    #[ORM\Column(type: Types::INTEGER)]
+    private int $version = 1;
+
     private function __construct()
     {
     }

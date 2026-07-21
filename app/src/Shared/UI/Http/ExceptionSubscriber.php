@@ -8,6 +8,7 @@ use App\Book\Domain\Exception\BookAlreadyAvailableException;
 use App\Book\Domain\Exception\BookAlreadyBorrowedException;
 use App\Book\Domain\Exception\BookAlreadyExistsException;
 use App\Book\Domain\Exception\BookNotFoundException;
+use Doctrine\ORM\OptimisticLockException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -79,6 +80,13 @@ final class ExceptionSubscriber implements EventSubscriberInterface
 
         if ($throwable instanceof BookAlreadyExistsException) {
             return [Response::HTTP_CONFLICT, 'BOOK_ALREADY_EXISTS', $throwable->getMessage(), null, []];
+        }
+
+        if ($throwable instanceof OptimisticLockException) {
+            // The state changed between read and write (e.g. two concurrent
+            // borrow attempts). Distinct from BOOK_ALREADY_BORROWED: this
+            // only proves the row changed, not what the current state is.
+            return [Response::HTTP_CONFLICT, 'CONCURRENT_MODIFICATION', 'The book was modified concurrently. Please retry with the latest state.', null, []];
         }
 
         if ($throwable instanceof HttpExceptionInterface) {
